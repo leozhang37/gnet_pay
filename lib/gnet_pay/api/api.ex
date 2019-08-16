@@ -19,7 +19,8 @@ defmodule GnetPay.Api do
 
     form_data = request_data <> "&SignMsg=" <> sign_string
     Logger.info("[GnetPay] generate_pay_request: #{form_data}")
-    form_data
+    path = client.api_host |> URI.merge("api/PayV36") |> to_string()
+    %{url: path, param: form_data}
   end
 
   @spec refund(Client.t(), RefundParam.t()) ::
