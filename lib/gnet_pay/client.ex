@@ -9,14 +9,18 @@ defmodule GnetPay.Client do
             mch_id: nil,
             p_key: nil,
             user_name: nil,
-            password: nil
+            password: nil,
+            is_prod: true,
+            openid: ""
 
   @type t :: %Client{
           api_host: String.t(),
           mch_id: String.t(),
           p_key: String.t(),
           user_name: String.t(),
-          password: String.t()
+          password: String.t(),
+          is_prod: Boolean.t(),
+          openid: String.t()
         }
 
   @spec new(Enum.t()) :: {:ok, Client.t()} | {:error, binary()}
