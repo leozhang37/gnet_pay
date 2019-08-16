@@ -35,7 +35,7 @@ defmodule GnetPay.Utils.Signature do
   def sign_refund(%RefundParam{} = data, client) do
     msg =
       Map.from_struct(data)
-      |> Map.merge(%{MerId: client.mch_id})
+      |> Map.merge(%{mer_id: client.mch_id})
       |> Enum.map(fn {k, v} -> "#{Macro.camelize(k)}=#{v}" end)
       |> Enum.join("&")
 
