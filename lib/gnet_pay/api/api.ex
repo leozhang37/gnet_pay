@@ -9,18 +9,15 @@ defmodule GnetPay.Api do
 
   @spec generate_pay_request(Client.t(), PayParam.t()) :: String.t()
   def generate_pay_request(client, %PayParam{} = attrs) do
-    request_data =
-      Map.from_struct(attrs)
-      |> Map.merge(%{mer_id: client.mch_id})
-      |> Enum.map(fn {k, v} -> "#{Macro.camelize(Atom.to_string(k))}=#{v}" end)
-      |> Enum.join("&")
-
     sign_string = Signature.sign_pay(attrs, client)
 
-    form_data = request_data <> "&SignMsg=" <> sign_string
-    Logger.info("[GnetPay] generate_pay_request: #{form_data}")
+    request_data =
+      Map.from_struct(attrs)
+      |> Map.merge(%{mer_id: client.mch_id, sign_msg: sign_string})
+      |> Enum.map(fn {k, v} -> %{Macro.camelize(Atom.to_string(k)) => v} end)
+
     path = client.api_host |> URI.merge("api/PayV36") |> to_string()
-    %{url: path, param: form_data}
+    %{url: path, param: request_data}
   end
 
   @spec refund(Client.t(), RefundParam.t()) ::
