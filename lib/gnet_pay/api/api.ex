@@ -27,7 +27,9 @@ defmodule GnetPay.Api do
       Map.from_struct(attrs)
       |> Map.merge(%{mer_id: client.mch_id})
       |> Enum.map(fn {k, v} ->
-        "#{Macro.camelize(Atom.to_string(k))}=#{URI.encode_www_form(v)}"
+        "#{Macro.camelize(Atom.to_string(k))}=#{
+          if is_binary(v), do: URI.encode_www_form(v), else: v
+        }"
       end)
       |> Enum.join("&")
 
