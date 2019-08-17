@@ -50,15 +50,11 @@ defmodule GnetPay.Api do
       shopping_time
       |> NaiveDateTime.add(-3600, :second)
       |> NaiveDateTime.truncate(:second)
-      |> NaiveDateTime.to_string()
-      |> URI.encode_www_form()
 
     end_time =
       shopping_time
       |> NaiveDateTime.add(3600, :second)
       |> NaiveDateTime.truncate(:second)
-      |> NaiveDateTime.to_string()
-      |> URI.encode_www_form()
 
     query_pay(client, begin_time, end_time, pay_id)
   end
@@ -78,7 +74,7 @@ defmodule GnetPay.Api do
       }&UserId=#{URI.encode_www_form(client.user_name)}&Pwd=#{
         URI.encode_www_form(client.password)
       }&MerId=#{URI.encode_www_form(client.mch_id)}&PayStatus=#{URI.encode_www_form("1")}
-      }&BeginTime=#{begin_time}&EndTime=#{end_time}"
+      }&BeginTime=#{URI.encode_www_form(begin_time)}&EndTime=#{URI.encode_www_form(end_time)}"
 
     form_data =
       if is_nil(pay_id) do
