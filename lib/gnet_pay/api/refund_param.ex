@@ -2,7 +2,7 @@ defmodule GnetPay.RefundParam do
   @type t :: %__MODULE__{
           tran_type: String.t(),
           pay_amount: Float.t(),
-          java_charSet: String.t(),
+          java_charset: String.t(),
           version: String.t(),
           refund_no: String.t(),
           order_no: String.t(),
@@ -11,8 +11,8 @@ defmodule GnetPay.RefundParam do
           reserved: String.t(),
           mer_id: String.t()
         }
-  defstruct tran_type: nil,
-            java_charSet: "UTF-8",
+  defstruct tran_type: "31",
+            java_charset: "UTF-8",
             version: "V36",
             refund_no: nil,
             mer_id: nil,

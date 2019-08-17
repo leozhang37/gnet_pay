@@ -10,8 +10,12 @@ defmodule GnetPay.HttpClient do
 
     headers = [
       {"Content-Type", "application/x-www-form-urlencoded"},
-      {"Accept", "text/html"}
+      {"Accept", "text/html"},
+      {"Accept-Charset", "UTF-8"},
+      {"cache-control", "no-cache"}
     ]
+
+    Logger.info("[HTTPoison] request body: #{attrs}")
 
     with {:ok, response} <- HTTPoison.post(path, attrs, headers, options),
          {:ok, response_data} <- process_response(response),

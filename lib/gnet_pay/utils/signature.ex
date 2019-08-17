@@ -44,8 +44,8 @@ defmodule GnetPay.Utils.Signature do
   end
 
   @spec sign(String.t(), Client.t()) :: String.t()
-  def sign(data, client) when is_binary(data) do
-    generate_sign_string(data, client)
+  def sign(data, client, is_refund \\ false) when is_binary(data) do
+    generate_sign_string(data, client, is_refund)
   end
 
   defp generate_sign_string(data, client, is_refund \\ false) do

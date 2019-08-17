@@ -45,7 +45,7 @@ defmodule GnetPay.Api do
 
   @spec query_pay(Client.t(), String.t(), NaiveDateTime.t()) ::
           {:ok, String.t()} | {:error, Error.t() | HTTPoison.Error.t()}
-  def query_pay(client, pay_id, %NaiveDateTime{} = shopping_time, options \\ []) do
+  def query_pay(client, pay_id, %NaiveDateTime{} = shopping_time) do
     begin_time =
       shopping_time
       |> NaiveDateTime.add(-3600, :second)
@@ -60,14 +60,32 @@ defmodule GnetPay.Api do
       |> NaiveDateTime.to_string()
       |> URI.encode_www_form()
 
+    query_pay(client, begin_time, end_time, pay_id)
+  end
+
+  @spec query_pay(Client.t(), NaiveDateTime.t(), NaiveDateTime.t(), String.t()) ::
+          {:ok, String.t()} | {:error, Error.t() | HTTPoison.Error.t()}
+  def query_pay(
+        client,
+        %NaiveDateTime{} = begin_time,
+        %NaiveDateTime{} = end_time,
+        pay_id,
+        options \\ []
+      ) do
     form_data =
       "TranType=#{URI.encode_www_form("100")}&JavaCharset=#{URI.encode_www_form("UTF-8")}&Version=#{
         URI.encode_www_form("V60")
       }&UserId=#{URI.encode_www_form(client.user_name)}&Pwd=#{
         URI.encode_www_form(client.password)
-      }&MerId=#{URI.encode_www_form(client.mch_id)}&PayStatus=#{URI.encode_www_form("1")}&OrderNo=#{
-        URI.encode_www_form(pay_id)
+      }&MerId=#{URI.encode_www_form(client.mch_id)}&PayStatus=#{URI.encode_www_form("1")}
       }&BeginTime=#{begin_time}&EndTime=#{end_time}"
+
+    form_data =
+      if is_nil(pay_id) do
+        form_data
+      else
+        form_data <> "&OrderNo=#{URI.encode_www_form(pay_id)}"
+      end
 
     with {:ok, data} <- HttpClient.post(client, "Trans.action", form_data, options) do
       {:ok, data}
