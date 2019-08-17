@@ -73,10 +73,9 @@ defmodule GnetPay.Api do
         URI.encode_www_form("V60")
       }&UserId=#{URI.encode_www_form(client.user_name)}&Pwd=#{
         URI.encode_www_form(client.password)
-      }&MerId=#{URI.encode_www_form(client.mch_id)}&PayStatus=#{URI.encode_www_form("1")}
-      }&BeginTime=#{URI.encode_www_form(begin_time |> NaiveDateTime.to_string())}&EndTime=#{
-        URI.encode_www_form(end_time |> NaiveDateTime.to_string())
-      }"
+      }&MerId=#{URI.encode_www_form(client.mch_id)}&PayStatus=#{URI.encode_www_form("1")}&BeginTime=#{
+        URI.encode_www_form(begin_time |> NaiveDateTime.to_string())
+      }&EndTime=#{URI.encode_www_form(end_time |> NaiveDateTime.to_string())}"
 
     form_data =
       if is_nil(pay_id) do
