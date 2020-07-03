@@ -6,6 +6,7 @@ defmodule GnetPay.Utils.Signature do
   alias GnetPay.Client
   alias GnetPay.PayParam
   alias GnetPay.RefundParam
+  alias GnetPay.RevertParam
 
   @doc """
   Generate the signature of data with API key
@@ -29,6 +30,18 @@ defmodule GnetPay.Utils.Signature do
 
     Logger.info("to sign string: #{msg}")
     generate_sign_string(msg, client)
+  end
+  
+  @spec sign_revert(RevertParam.t(), Client.t()) :: String.t()
+  def sign_revert(%RevertParam{} = data, client) do
+    msg =
+      Map.from_struct(data)
+      |> Map.merge(%{mer_id: client.mch_id})
+      |> Enum.map(fn {k, v} -> "#{Macro.camelize(Atom.to_string(k))}=#{v}" end)
+      |> Enum.join("&")
+
+    Logger.info("to sign revert string: #{msg}")
+    generate_sign_string(msg, client, true)
   end
 
   @spec sign_refund(RefundParam.t(), Client.t()) :: String.t()

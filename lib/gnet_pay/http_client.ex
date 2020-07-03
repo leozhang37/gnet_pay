@@ -26,7 +26,14 @@ defmodule GnetPay.HttpClient do
   end
 
   defp process_refund_response(response) do
-    {:ok, GnetPay.Utils.Query.decode(response)}
+	  
+	  case GnetPay.Utils.Query.decode(response) do
+		 %{"Code" => "0000"} = data -> {:ok, data} 
+			
+		r ->
+			{:error, r}	  
+	  end	  
+   
   end
 
   defp process_query_response(response) do

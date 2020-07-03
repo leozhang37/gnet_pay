@@ -34,7 +34,7 @@ defmodule GnetPay.Api do
       end)
       |> Enum.join("&")
 
-    sign_string = Signature.sign_refund(attrs, client)
+    sign_string = Signature.sign_revert(attrs, client)
 
     form_data = request_data <> "&SignMsg=" <> sign_string
     Logger.info("[GnetPay] generate_revert_request: #{form_data}")
