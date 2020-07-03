@@ -2,6 +2,7 @@ defmodule GnetPay.Api do
   alias GnetPay.Utils.Signature
   alias GnetPay.PayParam
   alias GnetPay.RefundParam
+  alias GnetPay.RevertParam
   alias GnetPay.Error
   alias GnetPay.Client
   alias GnetPay.HttpClient
@@ -18,6 +19,29 @@ defmodule GnetPay.Api do
 
     path = client.api_host |> URI.merge("api/PayV36") |> to_string()
     %{url: path, param: request_data}
+  end
+  
+  @spec refund(Client.t(), RevertParam.t()) ::
+          {:ok, map} | {:error, Error.t() | HTTPoison.Error.t()}
+  def revert(client, %RevertParam{} = attrs, options \\ []) do
+    request_data =
+      Map.from_struct(attrs)
+      |> Map.merge(%{mer_id: client.mch_id})
+      |> Enum.map(fn {k, v} ->
+        "#{Macro.camelize(Atom.to_string(k))}=#{
+          if is_binary(v), do: URI.encode_www_form(v), else: v
+        }"
+      end)
+      |> Enum.join("&")
+
+    sign_string = Signature.sign_refund(attrs, client)
+
+    form_data = request_data <> "&SignMsg=" <> sign_string
+    Logger.info("[GnetPay] generate_revert_request: #{form_data}")
+
+    with {:ok, data} <- HttpClient.post(client, "Trans.action", form_data, options) do
+      {:ok, data}
+    end
   end
 
   @spec refund(Client.t(), RefundParam.t()) ::
@@ -36,7 +60,7 @@ defmodule GnetPay.Api do
     sign_string = Signature.sign_refund(attrs, client)
 
     form_data = request_data <> "&SignMsg=" <> sign_string
-    Logger.info("[GnetPay] generate_pay_request: #{form_data}")
+    Logger.info("[GnetPay] generate_refund_request: #{form_data}")
 
     with {:ok, data} <- HttpClient.post(client, "Trans.action", form_data, options) do
       {:ok, data}
